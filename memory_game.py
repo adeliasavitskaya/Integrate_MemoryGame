@@ -109,7 +109,7 @@ class MemoryGame(QMainWindow):
         """Обновляет информацию об уровне в интерфейсе."""
         try:
             passed_lvl, passed_rec = self.current_lvl-1, self.record-1
-            self.passed_lvl_label.setText(f'𓆩🜲𓆪 {passed_lvl}')
+            self.passed_lvl_label.setText(f'🏆 {passed_lvl}')
             self.record_label.setText(f'🏆 {passed_rec}')
             self.moves_label.setText(f'ХОДЫ\t{self.moves_count}')
         except AttributeError as e:
@@ -337,8 +337,7 @@ class MemoryGame(QMainWindow):
         Args:
             win: True, если игрок победил."""
         try:
-            if self.sounds:
-                self.sounds.play_param('win' if win else 'lose')
+            self.show_game_result(win)
         except Exception as e:
             print(f"Ошибка завершения игры: {e}")
 

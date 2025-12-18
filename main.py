@@ -30,7 +30,6 @@ from memory_game import MemoryGame
 def main():
     """Основная функция запуска приложения."""
     try:
-        # Пустой словарь - используем стандартные ресурсы
         custom_paths = {}
 
         app = QApplication(sys.argv)
