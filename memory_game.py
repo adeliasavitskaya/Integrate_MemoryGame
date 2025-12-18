@@ -239,7 +239,7 @@ class MemoryGame(QMainWindow):
                 self.moves_label.setText(f'ХОДЫ\t{self.moves_count}')
                 QTimer.singleShot(time, lambda: self.hide_cards(index_1, index_2))
             else:
-                if self.sounds: self.sounds.play_param('match') # Совпали, реакция + помечаем пару
+                if self.sounds: self.sounds.play_param('match')
                 for i in (index_1, index_2):
                     self._effect_for_matched_cards(i)
                     self.card_states[i]['found_pair'] = True
@@ -355,7 +355,8 @@ class MemoryGame(QMainWindow):
         Args:
             win: True если игрок победил в предыдущей игре."""
         try:
-            # добавляем в прогресс информацию (если win, начнем следующий уровень, иначе перезапуск)
+            # добавляем в прогресс информацию
+            # (если win, начнем следующий уровень, иначе перезапуск)
             self.progress.new_level(win)
             self.reset_level()
         except Exception as e:
@@ -392,7 +393,8 @@ class MemoryGame(QMainWindow):
     def show_settings(self):
         """Показывает диалог настроек."""
         try:
-            dialog = SettingsDialog(music_manager=self.music, sound_manager=self.sounds, parent=self)
+            dialog = SettingsDialog(music_manager=self.music,
+                                    sound_manager=self.sounds, parent=self)
             dialog.exec_()
         except Exception as e:
             print(f"Ошибка показа диалога настроек: {e}")
