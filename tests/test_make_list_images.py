@@ -1,10 +1,12 @@
 import unittest
 import os
 import tempfile
+import sys
 
 from myself_moduls.make_list_images import list_files
 from unittest.mock import patch, MagicMock
 
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 class TestListFilesSimple(unittest.TestCase):
     """Тесты для list_files."""
@@ -32,14 +34,19 @@ class TestListFilesSimple(unittest.TestCase):
                 count = result.count(path)
                 self.assertEqual(count, 2)
 
-
+# НАЧАЛО ЗАИМСТВОВАННОГО КОДА
+# Источник: примеры тестирования с моками (mock) в unittest
+# Используется для тестирования функции работы с файловой системой
 class TestListFilesWithMocksSimple(unittest.TestCase):
     """Тесты с mock."""
 
     @patch("os.scandir")
     @patch("os.path.isdir")
     def test_mock_works(self, mock_isdir, mock_scandir):
-        """Mock работает, функция вызывается и возвращает 16 файлов."""
+        """Проверка что mock работает корректно.
+
+        ЗАИМСТВОВАНО: подход к созданию mock объектов файловой системы
+        """
         mock_isdir.return_value = True
         fake_files = []
         for i in range(8):
@@ -57,8 +64,13 @@ class TestListFilesWithMocksSimple(unittest.TestCase):
     @patch("os.scandir")
     @patch("os.path.isdir")
     def test_error_when_not_enough_images(self, mock_isdir, mock_scandir):
-        """Оошибка, если картинок меньше 8, и одновременно проверка,
-        что не берутся файлы неверного формата."""
+        """
+        Тест ошибки при недостаточном количестве изображений
+        и одновременно проверка,
+        что не берутся файлы неверного формата.
+
+        ЗАИМСТВОВАНО: подход к тестированию исключений с mock
+        """
         mock_isdir.return_value = True
 
         files = []
@@ -83,7 +95,7 @@ class TestListFilesWithMocksSimple(unittest.TestCase):
 
         error_msg = str(context.exception)
         self.assertIn("Недостаточно", error_msg)
-
+# КОНЕЦ ЗАИМСТВОВАННОГО КОДА
 
 if __name__ == "__main__":
     unittest.main()

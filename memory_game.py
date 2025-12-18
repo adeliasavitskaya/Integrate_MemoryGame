@@ -17,6 +17,10 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QIcon, QColor
 
+import tempfile
+import os
+from random import shuffle
+
 from myself_moduls.square_window import make_window_square
 from myself_moduls.make_list_images import list_files
 from myself_moduls.dialogs import GameResultDialog, SettingsDialog
@@ -107,14 +111,35 @@ class MemoryGame(QMainWindow):
         self._set_ui_levels()
 
     def _use_test_data(self):
-        """Использует тестовые данные при ошибке."""
+        """Использует тестовые данные при ошибке.
+
+        НАЧАЛО ЗАИМСТВОВАННОГО КОДА
+        Источник: пример создания тестовых изображений
+        """
+
         self.record = self.current_lvl = 1
         self.moves_count, self.time_show = 30, 1000
-        from random import shuffle
+        test_images = []
 
-        test_pairs = [f"{x}.png" for x in range(8)] * 2
+        # Создание временных тестовых PNG файлов
+        with tempfile.TemporaryDirectory() as tmpdir:
+            for i in range(8):
+                img_path = os.path.join(tmpdir, f"{i}.png")
+                with open(img_path, "wb") as f:
+                    # ЗАИМСТВОВАНО: бинарные данные PNG (1x1 пиксель)
+                    f.write(
+                        b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01"
+                        b"\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00"
+                        b"\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00"
+                        b"\x05\x00\r\n\xaa\x00\x00\x00\x00IEND\xaeB`\x82"
+                    )
+                test_images.append(img_path)
+
+        # Создание пар карточек
+        test_pairs = test_images * 2
         shuffle(test_pairs)
         self.images = test_pairs
+        # КОНЕЦ ЗАИМСТВОВАННОГО КОДА
 
     def _set_ui_levels(self):
         """Обновляет информацию об уровне в интерфейсе."""
@@ -128,9 +153,15 @@ class MemoryGame(QMainWindow):
 
     def _init_cards(self):
         """Инициализирует карточки игры.
-
         Находит все кнопки карточек, настраивает их внешний вид
-        и подключает обработчики кликов."""
+        и подключает обработчики кликов.
+        Raises:
+            ValueError: Если не найдены карточки в интерфейсе.
+            SystemExit: При критической ошибке инициализации.
+
+        Attributes:
+            self.cards (list[QPushButton]): Список объектов карточек,
+                отсортированный по именам (card_0, card_1, ..., card_15)."""
         try:
             self.cards = sorted(
                 [
@@ -161,16 +192,24 @@ class MemoryGame(QMainWindow):
             sys.exit(1)
 
     def _set_card_states(self):
-        """Устанавливает начальные состояния для всех карточек."""
+        """Устанавливает начальные состояния для всех карточек.
+
+        Создает словарь, где каждый ключ - индекс карточки (0-15),
+        а значение - словарь с информацией о состоянии карточки.
+
+        Структура состояния для каждой карточки:
+            - 'img': str - путь к изображению под карточкой
+            - 'turned_over': bool - флаг перевернутости карточки
+            - 'found_pair': bool - флаг найденной пары
+
+        Объекты карточек хранятся отдельно в self.cards."""
         self.card_states = {
             i: {
-                "card": card,
                 "img": self.images[i],
                 "turned_over": False,
                 "found_pair": False,
-                "icon": None,
             }
-            for i, card in enumerate(self.cards)
+            for i in range(len(self.cards))
         }
 
     def _interfaces_buttons_clicked(self):
@@ -302,7 +341,7 @@ class MemoryGame(QMainWindow):
         Args:
             index_card: Индекс карточки."""
         try:
-            card = self.card_states[index_card]["card"]
+            card = self.cards[index_card]
             checkmark = QLabel("✓︎", card)
             checkmark.setStyleSheet(
                 """
@@ -329,14 +368,13 @@ class MemoryGame(QMainWindow):
         try:
             if self.sounds:
                 self.sounds.play_param("flip")
-            card_state = self.card_states[index_card]
-            card = card_state["card"]
+            card = self.cards[index_card]
 
             card.hide()
             QTimer.singleShot(200, card.show)
 
             card.setIcon(QIcon(img))
-            card_state["turned_over"] = bool(img)
+            self.card_states[index_card]["turned_over"] = bool(img)
         except Exception as e:
             print(f"Ошибка переворота карточки: {e}")
 
@@ -360,7 +398,7 @@ class MemoryGame(QMainWindow):
         Args:
             index_card: Индекс карточки."""
         try:
-            card = self.card_states[index_card]["card"]
+            card = self.cards[index_card]
             self.flip_card(index_card)
             card.hide()
             QTimer.singleShot(150, card.show)

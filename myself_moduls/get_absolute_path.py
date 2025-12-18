@@ -18,6 +18,9 @@ def find_project_root(marker="README.md"):
 
     Raises:
         FileNotFoundError: Если маркер не найден.
+
+    НАЧАЛО ЗАИМСТВОВАННОГО КОДА
+    Источник: стандартный алгоритм поиска корня проекта
     """
     global _project_root
     if _project_root:
@@ -34,6 +37,7 @@ def find_project_root(marker="README.md"):
         current_dir = parent_dir
 
     raise FileNotFoundError(f"Не найден маркер '{marker}'")
+    # КОНЕЦ ЗАИМСТВОВАННОГО КОДА
 
 
 def get_path(name):
