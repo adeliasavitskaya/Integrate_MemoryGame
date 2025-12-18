@@ -1,4 +1,6 @@
-import json, os
+import json
+import os
+
 
 class Progress:
     """Класс для управления прогрессом игры (текущий уровень и рекорд).
@@ -10,7 +12,8 @@ class Progress:
         current_lvl (int): Текущий уровень, на котором находится игрок.
         progress_file (str): Полный путь к файлу с сохранённым прогрессом.
     """
-    def __init__(self, file_name='progress.json'):
+
+    def __init__(self, file_name="progress.json"):
         """Инициализирует менеджер прогресса.
 
         Args:
@@ -18,18 +21,19 @@ class Progress:
             (по умолчанию 'progress.json').
             Файл создаётся в той же директории, где находится этот модуль."""
         self.record = self.current_lvl = 1
-        self.progress_file = os.path.join(os.path.dirname(
-            os.path.abspath(__file__)), file_name)
+        self.progress_file = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), file_name
+        )
         self.load()
 
     def load(self):
         """Загружает сохранённый прогресс из файла.
-            Если проблемы с файлом, создаётся новый с начальными значениями."""
+        Если проблемы с файлом, создаётся новый с начальными значениями."""
         try:
-            with open(self.progress_file, 'r') as f:
+            with open(self.progress_file, "r") as f:
                 data = json.load(f)
-                self.record = data.get('record', 1)
-                self.current_lvl = data.get('current', 1)
+                self.record = data.get("record", 1)
+                self.current_lvl = data.get("current", 1)
         except Exception as e:
             print(f"Ошибка загрузки прогресса: {e}")
             self.save_progress()
@@ -37,9 +41,9 @@ class Progress:
     def save_progress(self):
         """Сохраняет текущий прогресс в файл."""
         try:
-            with open(self.progress_file, 'w', encoding='utf-8') as f:
-                json.dump({'record': self.record,
-                           'current': self.current_lvl}, f)
+            with open(self.progress_file, "w", encoding="utf-8") as f:
+                json.dump({"record": self.record,
+                           "current": self.current_lvl}, f)
         except Exception as e:
             print(f"Ошибка сохранения прогресса: {e}")
 

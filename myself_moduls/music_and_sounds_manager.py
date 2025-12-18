@@ -1,6 +1,7 @@
 from myself_moduls.get_absolute_path import get_path
 import pygame
 
+
 class SoundManager:
     """Менеджер звуковых эффектов игры.
 
@@ -11,20 +12,21 @@ class SoundManager:
         playing (bool): Флаг включения/выключения звуков.
         sounds (Dict[str, pygame.mixer.Sound]): Словарь загруженных звуков.
     """
+
     def __init__(self, custom_paths=None):
         """Инициализирует менеджер звуков и загружает звуковые файлы."""
         self.playing = True
         self.custom_paths = custom_paths if custom_paths else {}
         try:
             pygame.mixer.init()
-            sound_names = ('flip', 'match', 'win', 'lose')
+            sound_names = ("flip", "match", "win", "lose")
             self.sounds = {}
             for name in sound_names:
-                custom_sound = self.custom_paths.get(f'sound_{name}')
+                custom_sound = self.custom_paths.get(f"sound_{name}")
                 if custom_sound:
                     path = custom_sound
                 else:
-                    path = get_path(f'{name}.wav')
+                    path = get_path(f"{name}.wav")
 
                 self.sounds[name] = pygame.mixer.Sound(path)
         except Exception as e:
@@ -40,13 +42,16 @@ class SoundManager:
             return
 
         if param not in self.sounds:
-            print(f"Звук '{param}' не найден. Доступные: {list(self.sounds.keys())}")
+            print(
+                f"Звук '{param}' не найден. "
+                f"Доступные: {list(self.sounds.keys())}")
             return
 
         try:
             self.sounds[param].play()
         except Exception as e:
             print(f"Ошибка воспроизведения звука '{param}': {e}")
+
 
 class MusicManager:
     """Менеджер фоновой музыки в игре.
@@ -58,6 +63,7 @@ class MusicManager:
         playing (bool): Флаг, указывающий играет ли музыка в данный момент.
         loaded (bool): Флаг, указывающий успешно ли загружен музыкальный файл.
     """
+
     def __init__(self, custom_paths=None):
         """Инициализирует менеджер музыки и звуковую систему Pygame."""
         self.playing = False
@@ -78,7 +84,7 @@ class MusicManager:
             volume: Уровень громкости. По умолчанию 0.5.
         """
         try:
-            custom_music = self.custom_paths.get('music')
+            custom_music = self.custom_paths.get("music")
             music_path = custom_music if custom_music else get_path(filename)
 
             pygame.mixer.music.load(music_path)
@@ -109,4 +115,3 @@ class MusicManager:
                 self.playing = False
             except Exception as e:
                 print(f"Ошибка паузы музыки: {e}")
-

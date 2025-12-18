@@ -16,8 +16,9 @@ class TestGetPath(unittest.TestCase):
 
         files_in_root = os.listdir(root)
         has_project_marker = any(
-            f in files_in_root for f in
-            ["README.md", "requirements.txt", ".git", "pyproject.toml"])
+            f in files_in_root
+            for f in ["README.md", "requirements.txt",
+                      ".git", "pyproject.toml"])
 
         self.assertTrue(has_project_marker)
 

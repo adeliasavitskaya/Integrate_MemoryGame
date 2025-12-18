@@ -2,7 +2,9 @@ import os
 
 _cache = {}
 _project_root = None
-def find_project_root(marker='README.md'):
+
+
+def find_project_root(marker="README.md"):
     """Находит корневую директорию проекта по указанному маркеру.
 
     Ищет файл-маркер, перемещаясь вверх по иерархии директорий.
@@ -33,6 +35,7 @@ def find_project_root(marker='README.md'):
 
     raise FileNotFoundError(f"Не найден маркер '{marker}'")
 
+
 def get_path(name):
     """
     Находит путь к файлу или папке в проекте.
@@ -61,7 +64,7 @@ def get_path(name):
     base_dir = find_project_root()
     found = None
     for root, dirs, files in os.walk(base_dir):
-        if any(ignore in root for ignore in ['.git', '.venv', '__pycache__']):
+        if any(ignore in root for ignore in [".git", ".venv", "__pycache__"]):
             continue
 
         if name in dirs or name in files:

@@ -4,11 +4,17 @@
 Игра в карточки, где нужно находить пары одинаковых изображений.
 Управляет игровым процессом, уровнями, звуками и интерфейсом.
 """
+
 import sys
 
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton, QGraphicsDropShadowEffect
+from PyQt5.QtWidgets import (
+    QMainWindow,
+    QLabel,
+    QPushButton,
+    QGraphicsDropShadowEffect,
+)
 from PyQt5.QtGui import QIcon, QColor
 
 from myself_moduls.square_window import make_window_square
@@ -19,24 +25,26 @@ from myself_moduls.music_and_sounds_manager import MusicManager, SoundManager
 from myself_moduls.level_manager import LevelManager
 from myself_moduls.get_absolute_path import get_path
 
+
 class MemoryGame(QMainWindow):
     """Главное окно игры Memory Game.
 
-            Attributes:
-                level_manager (LevelManager): Управляет уровнями игры.
-                sounds (SoundManager): Управляет звуковыми эффектами.
-                music (MusicManager): Управляет фоновой музыкой.
-                progress (Progress): Управляет прогрессом игрока.
-                current_lvl (int): Текущий уровень игры.
-                record (int): Рекорд игрока.
-                moves_count (int): Оставшееся количество ходов.
-                time_show (int): Время показа карточек в миллисекундах.
-                images (list): Список путей к изображениям для карточек.
-                cards (list): Список кнопок-карточек.
-                card_states (dict): Состояние каждой карточки.
-                turned_cards (list): Индексы перевернутых карточек.
-                is_checking (bool): Флаг, ведется ли проверка совпадения карточек.
-            """
+    Attributes:
+        level_manager (LevelManager): Управляет уровнями игры.
+        sounds (SoundManager): Управляет звуковыми эффектами.
+        music (MusicManager): Управляет фоновой музыкой.
+        progress (Progress): Управляет прогрессом игрока.
+        current_lvl (int): Текущий уровень игры.
+        record (int): Рекорд игрока.
+        moves_count (int): Оставшееся количество ходов.
+        time_show (int): Время показа карточек в миллисекундах.
+        images (list): Список путей к изображениям для карточек.
+        cards (list): Список кнопок-карточек.
+        card_states (dict): Состояние каждой карточки.
+        turned_cards (list): Индексы перевернутых карточек.
+        is_checking (bool): Флаг, ведется ли проверка совпадения карточек.
+    """
+
     def __init__(self, custom_paths=None):
         """Инициализирует главное окно игры."""
         super().__init__()
@@ -50,8 +58,8 @@ class MemoryGame(QMainWindow):
     def _load_ui(self):
         """Загружает интерфейс из файла .ui."""
         try:
-            ui_name = 'game.ui'
-            ui_path = self.custom_paths.get('ui') or get_path(ui_name)
+            ui_name = "game.ui"
+            ui_path = self.custom_paths.get("ui") or get_path(ui_name)
             uic.loadUi(ui_path, self)
         except Exception as e:
             print(f"Ошибка загрузки UI: {e}")
@@ -92,7 +100,9 @@ class MemoryGame(QMainWindow):
             self.moves_count, dir_paths, self.time_show, lvl_type = lvl_info
             self.images = list_files(dir_paths)
         except Exception as e:
-            print(f"Ошибка инициализации уровня, используем тестовые данные: {e}")
+            print(
+                f"Ошибка инициализации уровня, используем тестовые данные: {e}"
+            )
             self._use_test_data()
         self._set_ui_levels()
 
@@ -101,17 +111,18 @@ class MemoryGame(QMainWindow):
         self.record = self.current_lvl = 1
         self.moves_count, self.time_show = 30, 1000
         from random import shuffle
-        test_pairs = [f'{x}.png' for x in range(8)] * 2
+
+        test_pairs = [f"{x}.png" for x in range(8)] * 2
         shuffle(test_pairs)
         self.images = test_pairs
 
     def _set_ui_levels(self):
         """Обновляет информацию об уровне в интерфейсе."""
         try:
-            passed_lvl, passed_rec = self.current_lvl-1, self.record-1
-            self.passed_lvl_label.setText(f'🏆 {passed_lvl}')
-            self.record_label.setText(f'🏆 {passed_rec}')
-            self.moves_label.setText(f'ХОДЫ\t{self.moves_count}')
+            passed_lvl, passed_rec = self.current_lvl - 1, self.record - 1
+            self.passed_lvl_label.setText(f"🏆 {passed_lvl}")
+            self.record_label.setText(f"🏆 {passed_rec}")
+            self.moves_label.setText(f"ХОДЫ\t{self.moves_count}")
         except AttributeError as e:
             print(f"Не найден нужный QLabel в UI: {e}")
 
@@ -121,10 +132,16 @@ class MemoryGame(QMainWindow):
         Находит все кнопки карточек, настраивает их внешний вид
         и подключает обработчики кликов."""
         try:
-            self.cards = sorted([btn for btn in self.findChildren(QPushButton)
-                                 if 'card_' in btn.objectName()],
-                                key=lambda btn: btn.objectName())
-            if not self.cards: raise ValueError("Карточки не найдены")
+            self.cards = sorted(
+                [
+                    btn
+                    for btn in self.findChildren(QPushButton)
+                    if "card_" in btn.objectName()
+                ],
+                key=lambda btn: btn.objectName(),
+            )
+            if not self.cards:
+                raise ValueError("Карточки не найдены")
 
             def create_click_handler_for_card(idx):
                 """Создаёт новый обработчик клика для каждой карточки"""
@@ -146,18 +163,32 @@ class MemoryGame(QMainWindow):
     def _set_card_states(self):
         """Устанавливает начальные состояния для всех карточек."""
         self.card_states = {
-        i: {'card': card, 'img': self.images[i], 'turned_over': False, 'found_pair': False, 'icon': None}
-        for i, card in enumerate(self.cards)}
+            i: {
+                "card": card,
+                "img": self.images[i],
+                "turned_over": False,
+                "found_pair": False,
+                "icon": None,
+            }
+            for i, card in enumerate(self.cards)
+        }
 
     def _interfaces_buttons_clicked(self):
         """Подключает обработчики кликов к кнопкам интерфейса."""
         try:
-            restart_icon = self.custom_paths.get('restart_icon')
-            menu_icon = self.custom_paths.get('menu_icon')
-            self.reboot.setIcon(QIcon(restart_icon if restart_icon else get_path('restart.png')))
-            self.menu.setIcon(QIcon(menu_icon if menu_icon else get_path('menu.png')))
+            restart_icon = self.custom_paths.get("restart_icon")
+            menu_icon = self.custom_paths.get("menu_icon")
+            self.reboot.setIcon(
+                QIcon(
+                    restart_icon if restart_icon else get_path("restart.png")
+                )
+            )
+            self.menu.setIcon(
+                QIcon(menu_icon if menu_icon else get_path("menu.png"))
+            )
 
             from myself_moduls.square_window import update_icon_size
+
             update_icon_size([self.reboot, self.menu], percent=0.7)
             self.reboot.clicked.connect(self.restart)
             self.menu.clicked.connect(self.show_settings)
@@ -166,7 +197,8 @@ class MemoryGame(QMainWindow):
 
     def resizeEvent(self, event):
         """Обработчик изменения размера окна.
-        Обеспечивает квадратную форму окна и обновляет размер иконок карточек."""
+        Обеспечивает квадратную форму окна и обновляет размер иконок карточек.
+        """
         try:
             super().resizeEvent(event)
             make_window_square(self, cards=self.cards)
@@ -180,9 +212,11 @@ class MemoryGame(QMainWindow):
             index_card: Индекс нажатой карточки."""
         try:
             if self.can_turn(index_card):
-                self.flip_card(index_card, self.card_states[index_card]['img'])
+                self.flip_card(index_card, self.card_states[index_card]["img"])
                 self.turned_cards.append(index_card)
-                if len(self.turned_cards) == 2: # Если перевернуто 2 карточки, проверяем совпадение
+                if (
+                    len(self.turned_cards) == 2
+                ):  # Если перевернуто 2 карточки, проверяем совпадение
                     self.check_match()
         except Exception as e:
             print(f" Ошибка при нажатии на карточку: {e}")
@@ -202,9 +236,12 @@ class MemoryGame(QMainWindow):
             # 2. Карточка уже перевернута
             # 3. Уже перевернуто 2 карточки для проверки
             # 4. Идёт проверка совпадения
-            return (not card_state['found_pair'] and not card_state['turned_over']
-                    and len(self.turned_cards) < 2 and
-                    not self.is_checking)
+            return (
+                not card_state["found_pair"]
+                and not card_state["turned_over"]
+                and len(self.turned_cards) < 2
+                and not self.is_checking
+            )
         except KeyError:
             print(f"Несуществующий индекс карточки: {index_card}")
             return False
@@ -218,8 +255,13 @@ class MemoryGame(QMainWindow):
             self.is_checking = True
             index_1, index_2 = self.turned_cards
             # результат проверки на совпадение
-            bool_match_pair = (self.card_states[index_1]['img'] == self.card_states[index_2]['img'])
-            self.process_match(index_1, index_2, match=bool_match_pair, time=self.time_show)
+            bool_match_pair = (
+                self.card_states[index_1]["img"]
+                == self.card_states[index_2]["img"]
+            )
+            self.process_match(
+                index_1, index_2, match=bool_match_pair, time=self.time_show
+            )
         except Exception as e:
             print(f"Ошибка проверки совпадения: {e}")
             self.turned_cards.clear()
@@ -235,17 +277,20 @@ class MemoryGame(QMainWindow):
             time: Время задержки перед скрытием карточек."""
         try:
             if not match:
-                self.moves_count -= 1 # Не совпали, тратим ход
-                self.moves_label.setText(f'ХОДЫ\t{self.moves_count}')
-                QTimer.singleShot(time, lambda: self.hide_cards(index_1, index_2))
+                self.moves_count -= 1  # Не совпали, тратим ход
+                self.moves_label.setText(f"ХОДЫ\t{self.moves_count}")
+                QTimer.singleShot(
+                    time, lambda: self.hide_cards(index_1, index_2)
+                )
             else:
-                if self.sounds: self.sounds.play_param('match')
+                if self.sounds:
+                    self.sounds.play_param("match")
                 for i in (index_1, index_2):
                     self._effect_for_matched_cards(i)
-                    self.card_states[i]['found_pair'] = True
+                    self.card_states[i]["found_pair"] = True
                 self.turned_cards.clear()
                 self.is_checking = False
-            self.check_game_completion() # Проверяем завершение игры
+            self.check_game_completion()  # Проверяем завершение игры
         except Exception as e:
             print(f"Ошибка обработки совпадения: {e}")
             self.turned_cards.clear()
@@ -257,14 +302,16 @@ class MemoryGame(QMainWindow):
         Args:
             index_card: Индекс карточки."""
         try:
-            card = self.card_states[index_card]['card']
-            checkmark = QLabel('✓︎', card)
-            checkmark.setStyleSheet('''
+            card = self.card_states[index_card]["card"]
+            checkmark = QLabel("✓︎", card)
+            checkmark.setStyleSheet(
+                """
                 QLabel {
                     color: #32CD32;
                     font-size: 64px;
                     font-weight: bold;
-                    background: transparent;}''')
+                    background: transparent;}"""
+            )
             checkmark.setAlignment(Qt.AlignCenter)
             checkmark.setGeometry(0, 0, card.width(), card.height())
             checkmark.show()
@@ -272,22 +319,24 @@ class MemoryGame(QMainWindow):
         except Exception as e:
             print(f"Ошибка создания визуального эффекта: {e}")
 
-    def flip_card(self, index_card, img=''):
+    def flip_card(self, index_card, img=""):
         """Переворачивает карточку.
 
         Args:
             index_card: Индекс карточки.
-            img: Путь к изображению для показа (пустая строка, когда надо скрыть)."""
+            img: Путь к изображению для показа (пустая строка, если скрыть).
+        """
         try:
-            if self.sounds: self.sounds.play_param('flip')
+            if self.sounds:
+                self.sounds.play_param("flip")
             card_state = self.card_states[index_card]
-            card = card_state['card']
+            card = card_state["card"]
 
             card.hide()
             QTimer.singleShot(200, card.show)
 
             card.setIcon(QIcon(img))
-            card_state['turned_over'] = bool(img)
+            card_state["turned_over"] = bool(img)
         except Exception as e:
             print(f"Ошибка переворота карточки: {e}")
 
@@ -311,7 +360,7 @@ class MemoryGame(QMainWindow):
         Args:
             index_card: Индекс карточки."""
         try:
-            card = self.card_states[index_card]['card']
+            card = self.card_states[index_card]["card"]
             self.flip_card(index_card)
             card.hide()
             QTimer.singleShot(150, card.show)
@@ -319,11 +368,11 @@ class MemoryGame(QMainWindow):
             print(f"Ошибка скрытия карточки: {e}")
 
     def check_game_completion(self):
-        """ Проверяет условия завершения игры после каждого хода.
+        """Проверяет условия завершения игры после каждого хода.
         Вызывается после обработки пары (совпадения или нет)"""
         try:
             # Проверяем победу (все пары найдены)
-            if all(state['found_pair'] for state in self.card_states.values()):
+            if all(state["found_pair"] for state in self.card_states.values()):
                 self.game_completion(win=True)
             # Проверяем поражение (закончились ходы)
             elif self.moves_count <= 0:
@@ -362,7 +411,8 @@ class MemoryGame(QMainWindow):
             print(f"Ошибка начала игры: {e}")
 
     def reset_level(self):
-        """Начальное состояние карточек и интерфейса для нового уровня. (следующего или 1-го)"""
+        """Начальное состояние карточек и интерфейса для нового уровня.
+        (следующего или начального)"""
         try:
             self._init_level()
             self._set_card_states()
@@ -392,8 +442,11 @@ class MemoryGame(QMainWindow):
     def show_settings(self):
         """Показывает диалог настроек."""
         try:
-            dialog = SettingsDialog(music_manager=self.music,
-                                    sound_manager=self.sounds, parent=self)
+            dialog = SettingsDialog(
+                music_manager=self.music,
+                sound_manager=self.sounds,
+                parent=self,
+            )
             dialog.exec_()
         except Exception as e:
             print(f"Ошибка показа диалога настроек: {e}")

@@ -7,14 +7,15 @@ from myself_moduls.records import Progress
 
 
 class TestProgress(unittest.TestCase):
-    """Тесты для проверки корректности сохранения и получения прогресса в игре."""
+    """Тесты для проверки корректности сохранения
+    и получения прогресса в игре."""
 
     def test_base_changes(self):
         """Тесты ведутся во временной папке."""
         with tempfile.TemporaryDirectory() as temp_dir:
             test_file = os.path.join(temp_dir, "progress.json")
 
-            with open(test_file, 'w') as f:
+            with open(test_file, "w") as f:
                 json.dump({"record": 1, "current": 1}, f)
 
             game = Progress(file_name=test_file)
@@ -35,8 +36,9 @@ class TestProgress(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             test_file = os.path.join(temp_dir, "new_progress.json")
             self.assertFalse(os.path.exists(test_file))
-            game = Progress(file_name=test_file)
+            Progress(file_name=test_file)
             self.assertTrue(os.path.exists(test_file))
+
 
 if __name__ == "__main__":
     unittest.main()

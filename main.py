@@ -9,14 +9,14 @@
 Для использования пользовательских ресурсов (пример кода):
     custom_paths = {
         'ui': './my_ui/game.ui', главный ui файл программы
-        'images': './my_images/', путь к папке, в которой содержатся 4 папки изображений
-        с именами images_1, images_2, images_3, ...
+        'images': './my_images/', путь к папке, в которой содержатся
+        4 папки изображений с именами images_1...images_4
         'music': './sounds/my_music.ogg', музыка
         'sound_flip': './sounds/flip.wav', звук переворота карточек
         'sound_match': './sounds/match.wav', звук для найденных пар
         'sound_win': './sounds/win.wav', звук победы
         'sound_lose': './sounds/lose.wav', звук поражения
-        'restart_icon': './icons/restart.png', изображение для кнопки перезагрузки
+        'restart_icon': './icons/restart.png', изображение кнопки перезагрузки
         'menu_icon': './icons/menu.png' изображение для кнопки настроек
     }
     game = MemoryGame(custom_paths=custom_paths)
@@ -41,5 +41,5 @@ def main():
         print(f"Ошибка запуска: {e}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

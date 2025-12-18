@@ -1,10 +1,11 @@
 from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QWidget, QPushButton
 
+
 def make_window_square(window, cards=None):
     """
     Устанавливает обработчик события изменения размера, который поддерживает
-    квадратную форму окна. При необходимости обновляет размер иконок на кнопках.
+    квадратную форму окна. Если нужно обновляет размер иконок на кнопках.
 
     Args:
         window: Окно, которое нужно сделать квадратным. Экземпляр QWidget.
@@ -16,7 +17,7 @@ def make_window_square(window, cards=None):
         TypeError: Если cards не None и не список.
     """
     if not isinstance(window, QWidget):
-        raise TypeError(f"window должен быть экземпляром QWidget")
+        raise TypeError("window должен быть экземпляром QWidget")
     if cards is not None and not isinstance(cards, list):
         raise TypeError(f"cards должен быть списком, получен {type(cards)}")
 
@@ -27,12 +28,14 @@ def make_window_square(window, cards=None):
         try:
             size = min(event.size().width(), event.size().height())
             window.resize(size, size)
-            if cards: update_icon_size(cards)
+            if cards:
+                update_icon_size(cards)
         except Exception as e:
             print(f"Ошибка при изменении размера окна: {e}")
             event.ignore()
 
-        if original_resize: original_resize(event)
+        if original_resize:
+            original_resize(event)
 
     window.resizeEvent = square_resize
 
@@ -41,7 +44,7 @@ def update_icon_size(cards: list, percent=0.8):
     """Обновляет размер иконок на кнопках в зависимости от их текущего размера.
 
     Args:
-        cards: Список кнопок (QPushButton), у которых нужно обновить размер иконок.
+        cards: Список кнопок (QPushButton), им нужно обновить размер иконок.
         percent: процент размера иконок относительно кнопки (по умолчанию 80%).
 
     Raises:
@@ -55,8 +58,10 @@ def update_icon_size(cards: list, percent=0.8):
         if not isinstance(card, QPushButton):
             raise TypeError("Все элементы cards должны быть QPushButton.")
         try:
-            img_size = QSize(int(card.size().width() * percent),
-                             int(card.size().height() *percent))
+            img_size = QSize(
+                int(card.size().width() * percent),
+                int(card.size().height() * percent),
+            )
             card.setIconSize(img_size)
         except Exception as e:
             print(f"Ошибка при обновлении иконки кнопки: {e}")

@@ -14,7 +14,7 @@ class TestListFilesSimple(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             for i in range(8):
                 file_path = os.path.join(temp_dir, f"img_{i}.png")
-                open(file_path, 'w').close()
+                open(file_path, "w").close()
 
             result = list_files((temp_dir,))
             self.assertEqual(len(result), 16)
@@ -25,7 +25,7 @@ class TestListFilesSimple(unittest.TestCase):
             files = []
             for i in range(8):
                 path = os.path.join(temp_dir, f"pic_{i}.png")
-                open(path, 'w').close()
+                open(path, "w").close()
                 files.append(path)
             result = list_files((temp_dir,))
             for path in files:
@@ -35,8 +35,9 @@ class TestListFilesSimple(unittest.TestCase):
 
 class TestListFilesWithMocksSimple(unittest.TestCase):
     """Тесты с mock."""
-    @patch('os.scandir')
-    @patch('os.path.isdir')
+
+    @patch("os.scandir")
+    @patch("os.path.isdir")
     def test_mock_works(self, mock_isdir, mock_scandir):
         """Mock работает, функция вызывается и возвращает 16 файлов."""
         mock_isdir.return_value = True
@@ -53,8 +54,8 @@ class TestListFilesWithMocksSimple(unittest.TestCase):
         result = list_files(("/test",))
         self.assertEqual(len(result), 16)
 
-    @patch('os.scandir')
-    @patch('os.path.isdir')
+    @patch("os.scandir")
+    @patch("os.path.isdir")
     def test_error_when_not_enough_images(self, mock_isdir, mock_scandir):
         """Оошибка, если картинок меньше 8, и одновременно проверка,
         что не берутся файлы неверного формата."""
@@ -82,6 +83,7 @@ class TestListFilesWithMocksSimple(unittest.TestCase):
 
         error_msg = str(context.exception)
         self.assertIn("Недостаточно", error_msg)
+
 
 if __name__ == "__main__":
     unittest.main()
